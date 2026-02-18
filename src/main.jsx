@@ -8,6 +8,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <HashRouter>
       <App />
-    </HaskRouter>
+    </HashRouter>
   </React.StrictMode>
 );
