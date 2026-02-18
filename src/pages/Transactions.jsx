@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import Summary from "../components/Summary";
 import { signOut } from "firebase/auth";
 import {
   addDoc,
@@ -21,6 +22,7 @@ export default function Transactions({ user }) {
   const [category, setCategory] = useState("General");
   const [note, setNote] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [month, setMonth] = useState(() => new Date().toISOString().slice(0,7)); //YYYY-MM
 
 useEffect(() => {
   const q = query(
@@ -88,128 +90,112 @@ useEffect(() => {
     await deleteDoc(doc(db, "transactions", id));
   }
 
-  return (
-    <div style={{ maxWidth: 900, margin: "40px auto", padding: 16 }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          gap: 16,
-          alignItems: "center",
-        }}
-      >
-        <h1>Transactions</h1>
-        <button onClick={() => signOut(auth)}>Sign out</button>
+return (
+  <div className="container">
+    <div className="header">
+      <div>
+        <h1 className="h1">Finance Tracker</h1>
+        <div className="subtle">Signed in</div>
       </div>
+      <button className="button ghost" onClick={() => signOut(auth)}>
+        Sign out
+      </button>
+    </div>
 
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-        <Stat label="Income" value={totals.income} />
-        <Stat label="Expense" value={totals.expense} />
-        <Stat label="Net" value={totals.net} />
+    <div className="card">
+      <div className="row" style={{ justifyContent: "space-between" }}>
+        <div>
+          <div className="subtle">Month</div>
+          <div className="subtle" style={{ fontSize: 12 }}>Choose a month to view summary</div>
+        </div>
+        <input
+          className="input"
+          style={{ maxWidth: 220 }}
+          type="month"
+          value={month}
+          onChange={(e) => setMonth(e.target.value)}
+        />
       </div>
+    </div>
 
-      <h2 style={{ marginTop: 24 }}>Add</h2>
-      <form
-        onSubmit={addTransaction}
-        style={{
-          display: "grid",
-          gap: 8,
-          gridTemplateColumns: "repeat(6, 1fr)",
-        }}
-      >
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          style={{ gridColumn: "span 1" }}
-        >
+    <div className="spacer" />
+    <Summary items={items} month={month} />
+
+    <div className="spacer" />
+    <div className="card">
+      <div className="subtle">Add transaction</div>
+      <div className="spacer" />
+
+      <form onSubmit={addTransaction} className="formgrid">
+        <select className="select span-1" value={type} onChange={(e) => setType(e.target.value)}>
           <option value="expense">expense</option>
           <option value="income">income</option>
         </select>
 
         <input
+          className="input span-1"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="Amount"
           inputMode="decimal"
-          style={{ gridColumn: "span 1" }}
         />
 
         <input
+          className="input span-2"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
           placeholder="Category"
-          style={{ gridColumn: "span 2" }}
         />
 
         <input
+          className="input span-1"
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          style={{ gridColumn: "span 1" }}
         />
 
-        <button type="submit" style={{ gridColumn: "span 1" }}>
+        <button className="button primary span-1" type="submit">
           Add
         </button>
 
         <input
+          className="input span-6"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder="Note"
-          style={{ gridColumn: "span 6" }}
         />
       </form>
+    </div>
 
-      <h2 style={{ marginTop: 24 }}>History</h2>
-      <div style={{ display: "grid", gap: 8 }}>
+    <div className="spacer" />
+    <div className="card">
+      <div className="subtle">History</div>
+      <div className="spacer" />
+
+      <div className="list">
         {items.map((t) => (
-          <div
-            key={t.id}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 8,
-              padding: 12,
-              display: "flex",
-              justifyContent: "space-between",
-              gap: 12,
-            }}
-          >
-            <div>
+          <div key={t.id} className="card" style={{ padding: 12 }}>
+            <div className="item">
               <div>
-                <b>{t.type}</b> • {t.category} • {formatDate(t.date)}
+                <div>
+                  <b>{t.type}</b> • {t.category} • {formatDate(t.date)}
+                </div>
+                {t.note ? <div className="subtle">{t.note}</div> : null}
               </div>
-              {t.note ? <div style={{ opacity: 0.8 }}>{t.note}</div> : null}
-            </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ fontVariantNumeric: "tabular-nums" }}>
-                {Number(t.amount).toFixed(2)}
+              <div className="row">
+                <div className="mono">{Number(t.amount).toFixed(2)}</div>
+                <button className="button" onClick={() => remove(t.id)}>
+                  Delete
+                </button>
               </div>
-              <button onClick={() => remove(t.id)}>Delete</button>
             </div>
           </div>
         ))}
       </div>
     </div>
-  );
-}
-
-function Stat({ label, value }) {
-  return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: 12,
-        padding: 12,
-        minWidth: 180,
-      }}
-    >
-      <div style={{ opacity: 0.7 }}>{label}</div>
-      <div style={{ fontSize: 20, fontVariantNumeric: "tabular-nums" }}>
-        {value.toFixed(2)}
-      </div>
-    </div>
-  );
+  </div>
+);
 }
 
 function formatDate(ts) {
