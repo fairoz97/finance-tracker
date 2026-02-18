@@ -127,14 +127,6 @@ export default function Summary({ items, month }) {
         </div>
       </div>
     </div>
-	<div className="spacer" />
-<div className="subtle" style={{ fontSize: 12 }}>
-  {byCategory.slice(0, 6).map((c) => (
-    <div key={c.name} className="row" style={{ justifyContent: "space-between" }}>
-      <span>{c.name}</span>
-      <span className="mono">{c.value.toFixed(2)}</span>
-    </div>
-  ))}
-</div>
+
   );
 }
