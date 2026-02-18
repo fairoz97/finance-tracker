@@ -90,6 +90,12 @@ useEffect(() => {
     await deleteDoc(doc(db, "transactions", id));
   }
 
+const historyItems = items.filter((t) => {
+  const d = t.date?.toDate ? t.date.toDate() : new Date(t.date);
+  const ym = d.toISOString().slice(0, 7);
+  return ym === month;
+});
+
 return (
   <div className="container">
     <div className="header">
@@ -173,7 +179,7 @@ return (
       <div className="spacer" />
 
       <div className="list">
-        {items.map((t) => (
+        {historyItems.map((t) => (
           <div key={t.id} className="card" style={{ padding: 12 }}>
             <div className="item">
               <div>
