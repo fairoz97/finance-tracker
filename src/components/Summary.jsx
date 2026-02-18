@@ -84,26 +84,31 @@ export default function Summary({ items, month }) {
       </div>
 
       <div className="grid grid-3">
-        <div className="card" style={{ minHeight: 280 }}>
-          <div className="row" style={{ justifyContent: "space-between" }}>
-            <div>
-              <div className="subtle">Expenses by category</div>
-              <div className="subtle" style={{ fontSize: 12 }}>
-                {byCategory.length ? "Top categories" : "No expenses yet"}
-              </div>
-            </div>
-          </div>
+      
+<div className="card" style={{ minHeight: 280 }}>
+  <div className="subtle">Expenses by category</div>
+  <div className="spacer" />
 
-          <div className="spacer" />
-          <div style={{ height: 220 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={byCategory} dataKey="value" nameKey="name" outerRadius={85} />
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+  <div style={{ height: 220 }}>
+    <ResponsiveContainer width="100%" height="100%">
+      <PieChart>
+        <Pie data={byCategory} dataKey="value" nameKey="name" outerRadius={85} />
+        <Tooltip />
+      </PieChart>
+    </ResponsiveContainer>
+  </div>
+
+  <div className="spacer" />
+
+  <div className="subtle" style={{ fontSize: 12 }}>
+    {byCategory.slice(0, 6).map((c) => (
+      <div key={c.name} className="row" style={{ justifyContent: "space-between" }}>
+        <span>{c.name}</span>
+        <span className="mono">{c.value.toFixed(2)}</span>
+      </div>
+    ))}
+  </div>
+</div>
 
         <div className="card" style={{ gridColumn: "span 2", minHeight: 280 }}>
           <div className="subtle">Daily net (income − expense)</div>
