@@ -152,6 +152,19 @@ return (
           onChange={(e) => setCategory(e.target.value)}
           placeholder="Category"
         />
+	
+	<div className="row span-6">
+  {["Food", "Transport", "Groceries", "Bills", "Fun", "Health"].map((c) => (
+    <button
+      key={c}
+      type="button"
+      className="button"
+      onClick={() => setCategory(c)}
+    >
+      {c}
+    </button>
+  ))}
+</div>	
 
         <input
           className="input span-1"
@@ -190,7 +203,7 @@ return (
               </div>
 
               <div className="row">
-                <div className="mono">{Number(t.amount).toFixed(2)}</div>
+                <div className="mono">{fmt.format(Number(t.amount || 0))}</div>
                 <button className="button" onClick={() => remove(t.id)}>
                   Delete
                 </button>
@@ -203,6 +216,8 @@ return (
   </div>
 );
 }
+
+const fmt = new Intl.NumberFormat(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 function formatDate(ts) {
   if (!ts) return "";
